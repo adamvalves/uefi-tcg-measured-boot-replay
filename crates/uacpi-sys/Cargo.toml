@@ -14,3 +14,6 @@ bench = false
 [build-dependencies]
 bindgen.workspace = true
 cc.workspace = true
+
+[lints]
+

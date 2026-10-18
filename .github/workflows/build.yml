@@ -22,7 +22,8 @@ jobs:
           components: rustfmt
 
       - name: Verify Formatting
-        run: cargo fmt --all --check
+        run: cargo fmt --manifest-path host/Cargo.toml --all --check
+
 
   build-host:
     name: Build Host Utilities
