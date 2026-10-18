@@ -1,0 +1,63 @@
+[workspace]
+members = [
+    "crates/ib-config",
+    "crates/ib-loader",
+    "crates/ib-tcg2",
+    "crates/ib-tcglog",
+    "crates/ib-tpm-crb",
+    "crates/ib-tpm2",
+    "crates/ib-uacpi",
+    "crates/uacpi-sys",
+]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+authors = ["Adam <adam@networkconnect.org>"]
+repository = "https://github.com/adamvalves/uefi-tcg-measured-boot-replay"
+publish = false
+
+[workspace.dependencies]
+uefi = { version = "0.40.0", default-features = false, features = [
+    "alloc",
+    "global_allocator",
+    "panic_handler",
+] }
+# Providing a UEFI protocol needs its raw layout; the safe wrappers in `uefi`
+# only consume protocols other people provide.
+uefi-raw = { version = "0.16.0", default-features = false }
+x86_64 = { version = "0.15.5", default-features = false, features = ["instructions"] }
+bitflags = { version = "2.13.1", default-features = false }
+thiserror = { version = "2.0.20", default-features = false }
+
+ib-config = { path = "crates/ib-config" }
+ib-tcg2 = { path = "crates/ib-tcg2" }
+ib-tcglog = { path = "crates/ib-tcglog" }
+ib-tpm-crb = { path = "crates/ib-tpm-crb" }
+ib-tpm2 = { path = "crates/ib-tpm2" }
+ib-uacpi = { path = "crates/ib-uacpi" }
+uacpi-sys = { path = "crates/uacpi-sys" }
+
+# The UEFI targets build without SSE, which the assembly-assisted backends of
+# these crates cannot be lowered for; `force-soft` keeps them on the portable
+# implementations that can.
+digest = { version = "0.10.7", default-features = false }
+sha1 = { version = "0.10.6", default-features = false, features = ["force-soft"] }
+sha2 = { version = "0.10.9", default-features = false, features = ["force-soft"] }
+
+bindgen = { version = "0.72.1", default-features = false, features = ["runtime"] }
+cc = "1.4.4"
+
+[workspace.lints.rust]
+warnings = "deny"
+missing_docs = "deny"
+
+# `pedantic` is a group, so it needs a lower priority than the individual lints
+# below to keep Cargo from rejecting the table on a future overlap.
+[workspace.lints.clippy]
+pedantic = { level = "deny", priority = -1 }
+undocumented_unsafe_blocks = "deny"
+missing_safety_doc = "deny"
+allow_attributes_without_reason = "deny"

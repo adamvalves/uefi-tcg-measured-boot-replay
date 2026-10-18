@@ -1,0 +1,37 @@
+/target
+/host/target
+
+# Scratch state produced when booting the image locally
+/esp
+/vars.fd
+/tpmstate
+*.sock
+
+# Rust artifacts
+**/*.rs.bk
+Cargo.lock
+
+# Build & Visual Studio artifacts
+*.pdb
+*.obj
+*.bin
+*.exe
+*.efi
+*.ilk
+*.exp
+*.lib
+*.log
+.vs/
+*.user
+*.suo
+x64/
+Debug/
+Release/
+bin/
+obj/
+
+# OS artifacts
+Thumbs.db
+[Dd]esktop.ini
+.DS_Store
+
