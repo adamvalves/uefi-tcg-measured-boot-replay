@@ -59,7 +59,25 @@ jobs:
           components: rust-src
 
       - name: Install LLVM & Clang
-        run: sudo apt-get update && sudo apt-get install -y clang llvm libclang-dev
+        run: |
+          sudo apt-get update && sudo apt-get install -y clang llvm libclang-dev
+          which llvm-ar || sudo ln -sf $(which llvm-ar-* 2>/dev/null | head -n1) /usr/local/bin/llvm-ar || true
+          which clang || sudo ln -sf $(which clang-* 2>/dev/null | head -n1) /usr/local/bin/clang || true
 
       - name: Build UEFI Application
-        run: cargo build --release --target x86_64-unknown-uefi
+        run: |
+          LIB_PATH=$(dirname $(find /usr/lib -name "libclang.so*" 2>/dev/null | head -n1))
+          if [ -n "$LIB_PATH" ]; then
+            export LIBCLANG_PATH="$LIB_PATH"
+            echo "LIBCLANG_PATH=$LIBCLANG_PATH"
+          fi
+          which clang
+          which llvm-ar
+          cargo build --release --target x86_64-unknown-uefi 2>&1 | tee build.log || {
+            echo "### Build Failed" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -n 120 build.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          }
+
